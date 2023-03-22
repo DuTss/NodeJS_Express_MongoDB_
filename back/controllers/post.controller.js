@@ -1,10 +1,12 @@
 const PostModel = require('../models/post.model');
 
+// Méthode GET
 module.exports.getPosts = async (req, res) => {
     const post = await PostModel.find();
     res.status(200).json(post);
 }
 
+// Méthode POST
 module.exports.setPosts = async (req, res) => {
     if (!req.body.titre & !req.body.description & req.body.lieu & req.body.prix) {
         res.status(400).json({message: "Remplir tous les champs obligatoire"})
@@ -20,6 +22,7 @@ module.exports.setPosts = async (req, res) => {
     res.status(200).json({post})
 }
 
+// Méthode PUT
 module.exports.putPost = async (req, res) => {
     const post = await PostModel.findById(req.params.id);
 
@@ -33,6 +36,7 @@ module.exports.putPost = async (req, res) => {
     res.status(200).json({updatePost})
 }
 
+// Méthode DELETE
 module.exports.deletePost = async (req, res) => {
     const post = await PostModel.findById(req.params.id);
 
