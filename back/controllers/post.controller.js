@@ -3,6 +3,7 @@ const PostModel = require('../models/post.model');
 // Méthode GET
 module.exports.getPosts = async (req, res) => {
     const post = await PostModel.find();
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.status(200).json(post);
 }
 

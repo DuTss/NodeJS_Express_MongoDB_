@@ -19,7 +19,7 @@ const postSchema = mongoose.Schema(
             required: true,
         },
         flag: {
-            type: boolean,
+            type: Boolean,
         }
     },
     {
