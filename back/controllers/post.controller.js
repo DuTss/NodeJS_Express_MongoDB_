@@ -7,6 +7,13 @@ module.exports.getPosts = async (req, res) => {
     res.status(200).json(post);
 }
 
+// Méthode GET
+module.exports.getPost = async (req, res) => {
+    const post = await PostModel.findById(req.params.id);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.status(200).json(post);
+}
+
 // Méthode POST
 module.exports.setPosts = async (req, res) => {
     if (!req.body.titre & !req.body.description & req.body.lieu & req.body.prix) {
