@@ -25,6 +25,8 @@ module.exports.setPosts = async (req, res) => {
         description: req.body.description,
         lieu: req.body.lieu,
         prix: req.body.prix,
+        flag: req.body.flag,
+        ajouter_par: req.body.ajouter_par
     })
 
     res.status(200).json({post})

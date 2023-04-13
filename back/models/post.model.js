@@ -20,6 +20,9 @@ const postSchema = mongoose.Schema(
         },
         flag: {
             type: Boolean,
+        },
+        ajouter_par:{
+            type: String,
         }
     },
     {

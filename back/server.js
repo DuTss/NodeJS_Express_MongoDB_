@@ -32,30 +32,19 @@ app.use("/user", require("./routes/user.routes"));
 const server = app.listen(port, () => {
     console.log('Connecté au port: ' + port);
 });
+
 // Permet d'écouter les connexions socket.io sur le même port
 io.attach(server);
 
 io.on('connection', (socket) => {
   console.log(`Un client est connecté avec l'ID : ${socket.id}`);
 
-
-
-  // client-side code
-socket.emit('message', {
-  roomId: '123',
-  text: 'Hello World!'
-});
-
-// server-side code
-socket.on('message', (data) => {
-  io.to(data.roomId).emit('message', {
-    senderId: socket.id,
-    text: data.text
+  // server-side code
+  socket.on('message', (data) => {
+    console.log(`Le message reçu est le suivant : ${data.text}`);
+    io.to(data.roomId).emit('message', {
+      senderId: socket.id,
+      text: data.text
+    });
   });
-});
-
-socket.on('message', (data) => {
-  console.log(`Message received from ${data.senderId}: ${data.text}`);
-});
-
 });
