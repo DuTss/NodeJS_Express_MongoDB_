@@ -27,6 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/post", require("./routes/post.routes"));
+app.use("/commentaire", require("./routes/commentaire.routes"));
 app.use("/user", require("./routes/user.routes"));
 
 const server = app.listen(port, () => {
