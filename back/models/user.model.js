@@ -23,7 +23,11 @@ const UserSchema = mongoose.Schema(
                 type: String,
                 required: true,
             }
-        }]
+        }],
+        favoris: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Annonce'
+        }],
     },
     {
         timestamps: true

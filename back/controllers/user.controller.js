@@ -71,3 +71,15 @@ module.exports.deleteUser = async (req, res) => {
     await user.deleteOne();
     res.status(200).json("Le message " + req.params.id + " a bien été supprimé")
 }
+
+module.exports.addFavoris = async (req, res) => {
+  try {
+    const utilisateur = await UserModel.findById(req.params.id);
+    const annonceId = req.body.annonceId; // identifiant de l'annonce à ajouter en favoris
+    utilisateur.favoris.push(annonceId);
+    await utilisateur.save();
+    res.status(200).json(utilisateur);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}

@@ -14,5 +14,6 @@ router.get("/:id", UserController.getUser);
 router.post("/", UserController.postUser);
 router.put("/:id", auth, UserController.putUser);
 router.delete("/:id", auth, UserController.deleteUser);
+router.post('/:id/favoris', UserController.addFavoris);
 
 module.exports = router;
