@@ -21,7 +21,7 @@ Cela lancera l'application sur le port par défaut 3001. Vous pouvez tester les 
 
 La structure du code de l'application est organisée selon la convention de structure de projet Express. Vous trouverez les modèles, les contrôleurs et les routes dans le dossier src.
 
-Le dossier src/config contient les fichiers de configuration pour différents environnements de développement.
+Le dossier <b>src/config</b> contient les fichiers de configuration pour différents environnements de développement.
 
 Le dossier src/utils contient les fichiers utilitaires tels que les fonctions de validation et les fonctions de génération de jetons.
 
