@@ -23,7 +23,7 @@ La structure du code de l'application est organisée selon la convention de stru
 
 Le dossier <b>src/config</b> contient les fichiers de configuration pour différents environnements de développement.
 
-Le dossier src/utils contient les fichiers utilitaires tels que les fonctions de validation et les fonctions de génération de jetons.
+Le dossier <b>src/utils</b> contient les fichiers utilitaires tels que les fonctions de validation et les fonctions de génération de jetons.
 
 # Fonctionnalités
 
