@@ -1,8 +1,13 @@
 const express = require("express");
 const cors = require('cors');
 const connectDB = require("./config/db");
-const session = require('express-session')
-const bodyParser = require('body-parser')
+const session = require('express-session');
+const bodyParser = require('body-parser');
+const mime = require('mime');
+
+// Définir le type MIME pour les fichiers CSS
+mime.define({'text/css': ['css']});
+
 const dotenv = require("dotenv").config();
 const io = require('socket.io')({
   cors: {
