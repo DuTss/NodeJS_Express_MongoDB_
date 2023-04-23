@@ -12,7 +12,9 @@ const dotenv = require("dotenv").config();
 const io = require('socket.io')({
   cors: {
     origin: 'http://localhost:4201',
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders:["Access-Control-Allow-Origin",'Content-Type', 'Authorization'],
+    credentials:true,
+    transports: ['websocket']
   }});
 const port = 3001;
 connectDB();
