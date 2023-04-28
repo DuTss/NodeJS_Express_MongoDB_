@@ -1,14 +1,19 @@
+// EXPRESS & DEPENDANCES
 const express = require("express");
 const cors = require('cors');
 const connectDB = require("./config/db");
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const mime = require('mime');
+const port = 3001;
+
+// DOTENV ==================================================================================
+const dotenv = require("dotenv").config();
 
 // Définir le type MIME pour les fichiers CSS
 mime.define({'text/css': ['css']});
 
-const dotenv = require("dotenv").config();
+// SOCKET IO ===============================================================================
 const io = require('socket.io')({
   cors: {
     origin: 'http://localhost:4201',
@@ -16,10 +21,11 @@ const io = require('socket.io')({
     credentials:true,
     transports: ['websocket']
   }});
-const port = 3001;
 connectDB();
 
 const app = express();
+
+// GESTION COOKIE SESSION  =================================================================
 app.set('trust proxy', 1) // trust first proxy
 app.use(session({
   secret: 'keyboard cat',
@@ -27,12 +33,22 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: true }
 }))
+
+// GESTION DU CORS (Cros-Origin-Request-Site) ==============================================
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }))
 
+// BODY PARSER =============================================================================
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+
+// URL ENCODED =============================================================================
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
+// ROUTES ==================================================================================
 app.use("/post", require("./routes/post.routes"));
 app.use("/commentaire", require("./routes/commentaire.routes"));
 app.use("/user", require("./routes/user.routes"));
@@ -44,6 +60,7 @@ const server = app.listen(port, () => {
 // Permet d'écouter les connexions socket.io sur le même port
 io.attach(server);
 
+// Connexion au service
 io.on('connection', (socket) => {
   console.log(`Un client est connecté avec l'ID : ${socket.id}`);
 

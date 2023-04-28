@@ -18,9 +18,9 @@ const postSchema = mongoose.Schema(
             type: Number,
             required: true,
         },
-        // image: {
-        //     type: String, // champ pour stocker l'URL de l'image
-        // },
+        image: {
+            type: String, // champ pour stocker l'URL de l'image
+        },
         flag: {
             type: Boolean,
         },

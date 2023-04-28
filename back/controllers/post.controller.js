@@ -1,18 +1,5 @@
 const PostModel = require('../models/post.model');
-// const multer = require('multer');
-
-// // Configuration de Multer pour stocker les fichiers dans le dossier "uploads"
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//       cb(null, './uploads/')
-//     },
-//     filename: function (req, file, cb) {
-//         console.log(file);
-//       cb(null, Date.now() + '-' + file.originalname)
-//     }
-//   })
-//   const upload = multer({ storage: storage })
-
+const Upload = require('../middleware/upload');
 // Méthode GET
 module.exports.getPosts = async (req, res) => {
     try {
@@ -35,19 +22,25 @@ module.exports.getPost = async (req, res) => {
 // Méthode POST
 module.exports.setPosts = async (req, res) => {
     try {
-        if (!req.body.titre && !req.body.description && !req.body.lieu && !req.body.prix) {
-            return res.status(400).json({message: "Remplir tous les champs obligatoires"})
-        }
-        const post = await PostModel.create({
-            titre: req.body.titre,
-            description: req.body.description,
-            lieu: req.body.lieu,
-            prix: req.body.prix,
-            flag: req.body.flag,
-            ajouter_par: req.body.ajouter_par
-        })
+            console.log("REQQQQQQQ FILE ========> ",req.file);
+            console.log("REQQQQQQQ body.imageeeeee ========> ",req.body);
 
-        return res.status(200).json({post})
+            const post = new PostModel({
+                titre: req.body.titre,
+                description: req.body.description,
+                lieu: req.body.lieu,
+                prix: req.body.prix,
+                flag: req.body.flag,
+                ajouter_par: req.body.ajouter_par,
+                image: req.file.path // Chemin du fichier uploadé
+            });
+            post.save((err, postSaved) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({message: "Une erreur est survenue lors de la création de l'annonce"});
+                }
+                return res.status(200).json({post: postSaved});
+            });
     } catch (error) {
         console.error(error)
         return res.status(500).json({message: "Une erreur est survenue lors de la création de l'annonce"})
