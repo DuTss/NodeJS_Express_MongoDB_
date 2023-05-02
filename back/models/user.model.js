@@ -34,10 +34,21 @@ const UserSchema = mongoose.Schema(
     }
 )
 
+/**
+ * Génère un jeton d'authentification pour l'utilisateur, le sauvegarde dans la base de données et le renvoie.
+ * @returns {string} Le jeton d'authentification généré.
+ */
 UserSchema.methods.generateAuthTokenAndSaveUser = async function () {
+    // Génère un jeton d'authentification en utilisant l'id de l'utilisateur et une clé secrète.
     const authToken = await jwt.sign({_id:this.id.toString()}, 'foo')
+
+    // Ajoute le jeton d'authentification généré à la liste des jetons d'authentification de l'utilisateur.
     this.AuthTokens.push({authToken})
+
+    // Enregistre l'utilisateur avec le nouveau jeton d'authentification dans la base de données.
     await this.save()
+
+    // Retourne le jeton d'authentification généré.
     return authToken
 }
 
