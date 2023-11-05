@@ -18,6 +18,12 @@ const UserSchema = mongoose.Schema(
         admin: {
             type: Boolean,
         },
+        image: {
+            type: String, // L'URL de l'image associée à l'utilisateur
+        },
+        paiement: [{
+            type: String,
+        }],
         AuthTokens: [{
             AuthToken: {
                 type: String,

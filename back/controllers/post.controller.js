@@ -1,5 +1,10 @@
 const PostModel = require('../models/post.model');
-const Upload = require('../middleware/upload');
+var http = require('http');
+var formidable = require('formidable');
+var fs = require('fs');
+const { log } = require('console');
+const path = require('path');
+//const Upload = require('../middleware/upload');
 
 /**
  * Méthode GET pour récupérer tous les posts
@@ -34,30 +39,66 @@ module.exports.getPost = async (req, res) => {
     res.status(200).json(post);
 }
 
-// Méthode POST
+/**
+ * Définit un nouveau post dans la base de données.
+ * @param {Object} req - L'objet de la requête.
+ * @param {Object} res - L'objet de la réponse.
+ */
 module.exports.setPosts = async (req, res) => {
-    try {
-            const post = new PostModel({
-                titre: req.body.titre,
-                description: req.body.description,
-                lieu: req.body.lieu,
-                prix: req.body.prix,
-                flag: req.body.flag,
-                ajouter_par: req.body.ajouter_par,
-                image: req.file.path // Chemin du fichier uploadé
-            });
-        post.save((err, postSaved) => { // Enregistre la nouvelle annonce dans la base de données
-            if (err) { // Si une erreur survient
-                console.error(err); // Affiche l'erreur dans la console
-                return res.status(500).json({ message: "Une erreur est survenue lors de la création de l'annonce" }); // Retourne une réponse avec un message d'erreur
-            }
-            return res.status(200).json({ post: postSaved }); // Retourne une réponse avec les données de la nouvelle annonce
+  try {
+
+    const form = new formidable.IncomingForm({
+      uploadDir: `./back/public/uploads`,
+      keepExtensions: true,
+      hashAlgorithm: false,
+      filename: (name, ext, path, form) => {
+        const title = form.fields.titre.toString();
+        return `${title}${ext}`;
+      }
+    });
+    // Analyser la requête
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({
+          message: "Une erreur s'est produite lors de la création de l'annonce"
         });
-    } catch (error) { // Si une erreur survient
-        console.error(error) // Affiche l'erreur dans la console
-        return res.status(500).json({ message: "Une erreur est survenue lors de la création de l'annonce" }) // Retourne une réponse avec un message d'erreur
-    }
-}
+      }
+
+
+
+      // Récupérer les trois derniers caractères du nom de l'image pour obtenir l'extension
+      const imageExtension = files.image[0].newFilename.slice(-3);
+
+      // Créer un nouvel objet post
+      const post = new PostModel({
+        titre: fields.titre.toString(),
+        description: fields.description.toString(),
+        lieu: fields.lieu.toString(),
+        prix: Number(fields.prix),
+        flag: fields.flag,
+        ajouter_par: fields.ajouter_par.toString(),
+        image: `${fields.titre.toString()}.${imageExtension}`
+      });
+
+      // Enregistrer le post dans la base de données
+      post.save((err, postSaved) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({
+            message: "Une erreur s'est produite lors de la création de l'annonce"
+          });
+        }
+        return res.status(200).json({ post: postSaved });
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Une erreur s'est produite lors de la création de l'annonce"
+    });
+  }
+};
 
 // Méthode PUT
 module.exports.putPost = async (req, res) => {

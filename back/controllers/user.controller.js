@@ -54,7 +54,7 @@ module.exports.putUser = async (req, res) => {
     // Authentification de l'utilisateur en utilisant un middleware
     auth(req, res, async () => {
       // Met à jour l'utilisateur
-      const updatedUser = await UserModel.findByIdAndUpdate(user, req.body, { new: true });
+      const updatedUser = await UserModel.findByIdAndUpdate(user, req.body,req.file.path, { new: true });
 
       // Crée un jeton JWT avec les données utilisateur mises à jour
       jwt.sign({ updatedUser }, privateKey, { expiresIn: '300s' }, (err, token) => {
