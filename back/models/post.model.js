@@ -19,9 +19,7 @@ const postSchema = mongoose.Schema(
             type: Number,
             required: true, // Le prix de l'annonce est requis
         },
-        image: {
-            type: String, // L'URL de l'image associée à l'annonce
-        },
+        images: [{ type: String }],
         flag: {
             type: Boolean, // Si l'annonce est signalée ou non
         },

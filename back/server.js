@@ -6,6 +6,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const mime = require('mime');
 const port = 3001;
+const path = require('path');
 
 // DOTENV ==================================================================================
 const dotenv = require("dotenv").config();
@@ -43,6 +44,9 @@ app.use(
     extended: true,
   })
 );
+
+// Serve static files from the images directory
+app.use('/public/uploads', express.static(path.join(__dirname,'public', 'uploads')));
 
 // URL ENCODED =============================================================================
 app.use(express.json());

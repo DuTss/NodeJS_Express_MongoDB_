@@ -4,7 +4,6 @@ var formidable = require('formidable');
 var fs = require('fs');
 const { log } = require('console');
 const path = require('path');
-//const Upload = require('../middleware/upload');
 
 /**
  * Méthode GET pour récupérer tous les posts
@@ -27,6 +26,29 @@ module.exports.getPosts = async (req, res) => {
     }
 }
 
+// module.exports.getPosts = async (req, res) => {
+//   try {
+//     // Rechercher tous les posts
+//     const posts = await PostModel.find();
+
+//     // Construire l'URL de l'image pour chaque post
+//     const postsWithImageUrl = posts.map(post => {
+//       const image = `http://localhost:3001/public/uploads/${post.image}`;
+//       return { ...post, image };
+//     });
+
+//     // Définir l'en-tête Access-Control-Allow-Origin pour autoriser le partage de ressources entre origines
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     // Envoyer les posts avec l'URL de l'image en tant que réponse JSON avec un code d'état 200
+//     res.status(200).json(postsWithImageUrl);
+//   } catch (error) {
+//     // Journaliser l'erreur dans la console
+//     console.error(error);
+//     // Envoyer un message d'erreur en tant que réponse JSON avec un code d'état 500
+//     res.status(500).json({ message: "Une erreur est survenue lors de la récupération des annonces" });
+//   }
+// };
+
 // Méthode GET pour récupérer un post par ID
 module.exports.getPost = async (req, res) => {
     // Trouver le post par ID à partir des paramètres de la requête
@@ -46,18 +68,27 @@ module.exports.getPost = async (req, res) => {
  */
 module.exports.setPosts = async (req, res) => {
   try {
-
     const form = new formidable.IncomingForm({
       uploadDir: `./back/public/uploads`,
       keepExtensions: true,
       hashAlgorithm: false,
+      multiples: true,
       filename: (name, ext, path, form) => {
         const title = form.fields.titre.toString();
-        return `${title}${ext}`;
+        return `${title}_${Date.now()}${ext}`;
       }
     });
-    // Analyser la requête
-    form.parse(req, (err, fields, files) => {
+
+    form.parse(req, async (err, fields) => {
+      const images =[];
+      console.log(fields);
+      if (fields.image) {
+        fields.image.forEach((image) => {
+          const extension = image.match(/\.(.*?)$/)[1];
+          console.log("IMAAAGESSS ", image)
+          images.push(`${fields.titre.toString()}.${extension}`);
+        });
+      }
       if (err) {
         console.error(err);
         return res.status(500).json({
@@ -65,12 +96,7 @@ module.exports.setPosts = async (req, res) => {
         });
       }
 
-
-
-      // Récupérer les trois derniers caractères du nom de l'image pour obtenir l'extension
-      const imageExtension = files.image[0].newFilename.slice(-3);
-
-      // Créer un nouvel objet post
+      console.log("TABLEAU D'IMAGE : ", images);
       const post = new PostModel({
         titre: fields.titre.toString(),
         description: fields.description.toString(),
@@ -78,19 +104,19 @@ module.exports.setPosts = async (req, res) => {
         prix: Number(fields.prix),
         flag: fields.flag,
         ajouter_par: fields.ajouter_par.toString(),
-        image: `${fields.titre.toString()}.${imageExtension}`
+        images: images
       });
 
-      // Enregistrer le post dans la base de données
-      post.save((err, postSaved) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({
-            message: "Une erreur s'est produite lors de la création de l'annonce"
-          });
-        }
+      // Enregistrez l'annonce dans la base de données
+      try {
+        const postSaved = await post.save();
         return res.status(200).json({ post: postSaved });
-      });
+      } catch (saveError) {
+        console.error(saveError);
+        return res.status(500).json({
+          message: "Une erreur s'est produite lors de l'enregistrement de l'annonce dans la base de données"
+        });
+      }
     });
   } catch (error) {
     console.error(error);
@@ -100,12 +126,13 @@ module.exports.setPosts = async (req, res) => {
   }
 };
 
+
 // Méthode PUT
 module.exports.putPost = async (req, res) => {
     try {
       // Trouver le post par son ID
       const post = await PostModel.findById(req.params.id);
-
+      
       // Vérifier si le post existe
       if (!post) {
         return res.status(404).json({ message: "Ce poste n'existe pas !" });
