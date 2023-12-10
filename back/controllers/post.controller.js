@@ -16,6 +16,7 @@ module.exports.getPosts = async (req, res) => {
         const post = await PostModel.find();
         // Définir l'en-tête Access-Control-Allow-Origin pour autoriser le partage de ressources entre origines
         res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
         // Envoyer les posts en tant que réponse JSON avec un code d'état 200
         res.status(200).json(post);
     } catch (error) {
@@ -75,7 +76,8 @@ module.exports.setPosts = async (req, res) => {
       multiples: true,
       filename: (name, ext, path, form) => {
         const title = form.fields.titre.toString();
-        return `${title}_${Date.now()}${ext}`;
+        const lieu = form.fields.lieu.toString();
+        return `${title}_${lieu}${ext}`;
       }
     });
 
@@ -86,7 +88,7 @@ module.exports.setPosts = async (req, res) => {
         fields.image.forEach((image) => {
           const extension = image.match(/\.(.*?)$/)[1];
           console.log("IMAAAGESSS ", image)
-          images.push(`${fields.titre.toString()}.${extension}`);
+          images.push(`${fields.titre.toString()}_${fields.lieu.toString()}.${extension}`);
         });
       }
       if (err) {
