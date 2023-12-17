@@ -2,6 +2,8 @@ const UserModel = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const privateKey = 'private.key';
 const bcrypt = require('bcryptjs');
+const { login } = require('./auth.controller');
+const auth = require('../middleware/auth');
 
 // Méthode GET OK
 module.exports.getUsers = async (req, res) => {
@@ -26,7 +28,6 @@ module.exports.postUser = async (req, res) => {
       res.status(400).json({message: "Remplir tous les champs obligatoire"})
   }
   const { pseudo, lieu, mdp } = req.body
-
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(mdp, salt);
   const user = await UserModel.create({
@@ -54,17 +55,9 @@ module.exports.putUser = async (req, res) => {
     // Authentification de l'utilisateur en utilisant un middleware
     auth(req, res, async () => {
       // Met à jour l'utilisateur
-      const updatedUser = await UserModel.findByIdAndUpdate(user, req.body,req.file.path, { new: true });
+      const updatedUser = await UserModel.findByIdAndUpdate(user, req.body, { new: true });
 
-      // Crée un jeton JWT avec les données utilisateur mises à jour
-      jwt.sign({ updatedUser }, privateKey, { expiresIn: '300s' }, (err, token) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ message: "Erreur lors de la création du token" });
-        }
-        console.log("TOKEN MODIFICATION", token);
-        return res.json({ token, updatedUser });
-      });
+      return res.json({ user: updatedUser });
     });
   } catch (err) {
     console.error(err);

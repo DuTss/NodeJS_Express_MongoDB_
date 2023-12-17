@@ -28,7 +28,8 @@ const UserSchema = mongoose.Schema(
             AuthToken: {
                 type: String,
                 required: true,
-            }
+            },
+            _id: false  // Ne pas inclure l'_id dans le schéma
         }],
         favoris: [{
             type: mongoose.Schema.Types.ObjectId,

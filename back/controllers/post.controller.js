@@ -16,7 +16,6 @@ module.exports.getPosts = async (req, res) => {
         const post = await PostModel.find();
         // Définir l'en-tête Access-Control-Allow-Origin pour autoriser le partage de ressources entre origines
         res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
         // Envoyer les posts en tant que réponse JSON avec un code d'état 200
         res.status(200).json(post);
     } catch (error) {
